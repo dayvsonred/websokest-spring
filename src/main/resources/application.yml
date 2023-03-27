@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: "neph-socket"
+  profiles:
+    active: ${springProfile:local}
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    database: 7
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000
+server:
+  servlet:
+    context-path: /neph-socket
+  port: 8080
+app:
+  socket:
+    paths:
+     journey: "/socket-journey"
+  redis:
+    expire:
+      journey-ticket: 36

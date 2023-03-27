@@ -1,0 +1,43 @@
+spring:
+  rabbitmq:
+    virtualhost: /
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    thread:
+      min: 1
+      max: 4
+#    listener:
+#      default-requeue-rejected: false
+  jackson:
+    default-property-inclusion: NON_NULL
+
+api:
+  rabbitmq:
+    journey:
+      event:
+        exchange: neph.socket.journey.event.exchange
+        routingkey: #
+        routing: process
+        queue: neph.socket.journey.event.queue
+        max.retries: 2
+        dlq:
+          routing: dlq
+          queue: neph.socket.journey.event.queue.dlq
+          delay: 1000
+        pkl:
+          queue: neph.socket.journey.event.queue.parkinglot
+          routing: parkinglot
+
+#app:
+#  rabbit:
+#    configs:
+#      journey:
+#        event:
+#          name: neph.socket.journey.event
+#          dlq: true
+#          retry:
+#            name: ${app.rabbit.configs.journey.event.name}-retry
+#            sleep: 30000
+#            attempts: 5
