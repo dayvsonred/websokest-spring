@@ -1,2 +1,2 @@
-# websokest-spring
-websokest spring boot
+# websocket-spring
+websocket spring boot
