@@ -24,6 +24,7 @@ public class JourneyEventRedis {
     private String patientPhone;
     private Long codTriage;
     private Long codService;
+    private String sessionId;
 
 
     @TimeToLive(unit = TimeUnit.HOURS)

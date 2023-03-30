@@ -1,5 +1,6 @@
 package br.com.dasa.neph.socket.nephsocket.services;
 
+import br.com.dasa.neph.socket.nephsocket.dtos.EventDto;
 import br.com.dasa.neph.socket.nephsocket.dtos.RegistryDto;
 import br.com.dasa.neph.socket.nephsocket.dtos.events.RegistryEventDTO;
 import br.com.dasa.neph.socket.nephsocket.handler.WebSocketHandler;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -54,21 +56,52 @@ public class JourneyService {
         }
     }
 
-    public void findJourneyByTicketId(UUID id){
+    public void addSessionToTicket(String ticket, String sessionId){
         try {
-            JourneyEventRedis journeyEventRedis = this.journeyEventRepository.findById(id).orElse(null);
-            log.info("Find id Ticket success User - {}", journeyEventRedis.getPatientName());
+            JourneyEventRedis journeyEventRedis = this.getJourneyByTicketId(UUID.fromString(ticket));
+            journeyEventRedis.setSessionId(sessionId);
+            this.journeyEventRepository.save(journeyEventRedis);
+        }catch ( Exception e ){
+            log.info("ERROR CRITICAL Registry in redis ticket - {}", ticket);
+            throw new RuntimeException(e);
+        }
+    }
 
-
+    public Optional<JourneyEventRedis> findJourneyByTicketId(UUID id){
+        try {
+            return Optional.ofNullable(this.journeyEventRepository.findById(id).orElse(null));
         }catch ( Exception e ){
             log.info("ERROR Find ID Ticket in redis ticket - {}", id.toString());
             throw new RuntimeException(e);
         }
     }
 
-    public void publisherEvent(){
+    public JourneyEventRedis getJourneyByTicketId(UUID id){
         try {
-            journeyEventPublisher.send(LocalDateTime.now().toString());
+            JourneyEventRedis journeyEventRedis = this.journeyEventRepository.findById(id).orElseThrow(
+                    () -> new RuntimeException("ERROR Not found Journey TicketId " + id )
+            );
+            log.info("Find id Ticket success User - {}", journeyEventRedis.getPatientName());
+
+            return journeyEventRedis;
+        }catch ( Exception e ){
+            log.info("ERROR Find ID Ticket in redis ticket - {}", id.toString());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void publisherEvent(EventDto eventDto){
+        try {
+            journeyEventPublisher.send(eventDto);
+        }catch ( Exception e ){
+            log.info("ERROR Publisher event in - {}", LocalDateTime.now().toString());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void sendEventMsgToClient(EventDto eventDto){
+        try {
+            journeyEventPublisher.send(eventDto);
         }catch ( Exception e ){
             log.info("ERROR Publisher event in - {}", LocalDateTime.now().toString());
             throw new RuntimeException(e);

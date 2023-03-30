@@ -14,7 +14,7 @@ spring:
 server:
   servlet:
     context-path: /neph-socket
-  port: 8080
+  port: 5000
 app:
   socket:
     paths:

@@ -5,13 +5,13 @@ import br.com.dasa.neph.socket.nephsocket.dtos.RegistryDto;
 import br.com.dasa.neph.socket.nephsocket.dtos.events.RegistryEventDTO;
 import br.com.dasa.neph.socket.nephsocket.services.JourneyService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @RequestMapping("/v1/journey")
@@ -20,15 +20,14 @@ public class JourneyController {
 
     private final JourneyService journeyService;
 
-
-    @PostMapping("/registry")
+    @PostMapping(value = "/registry", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RegistryDto> registryJourney(@RequestBody RegistryEventDTO registryEventDTO){
         return ResponseEntity.ok(journeyService.registryJourneyTicket(registryEventDTO));
     }
 
-    @PostMapping("/event")
-    public ResponseEntity<EventDto> eventJourney(@RequestBody RegistryEventDTO registryEventDTO){
-        journeyService.publisherEvent();
-        return ResponseEntity.ok(new EventDto("21323", LocalDateTime.now(), null , null, null));
+    @PostMapping(value = "/event", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<HttpStatus> eventJourney(@RequestBody EventDto eventDto){
+        journeyService.publisherEvent(eventDto);
+        return ResponseEntity.ok().build();
     }
 }

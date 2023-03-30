@@ -1,6 +1,6 @@
 package br.com.dasa.neph.socket.nephsocket.dtos;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
-public record EventDto (String ticket, LocalDateTime time, String type, String payload, String message )  {
+public record EventDto (String ticket, String type, String message )  {
 }
